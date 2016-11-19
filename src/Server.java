@@ -14,28 +14,41 @@ import java.net.Socket;
 
 public class Server implements Runnable {
     Socket csocket;
-    Server(Socket csocket) {
+    String msg;
+
+
+
+
+    Server(Socket csocket, String message) {
         this.csocket = csocket;
+        this.msg = message;
     }
 
     public static void main(String args[])
             throws Exception {
+
         ServerSocket ssock = new ServerSocket(1234);
         System.out.println("Listening");
         while (true) {
             Socket sock = ssock.accept();
+            InputStream is = sock.getInputStream();
+            InputStreamReader isr = new InputStreamReader(is);
+            BufferedReader br = new BufferedReader(isr);
+            String message = br.readLine();
+            System.out.println("Message received from client is "+ message);
+            String newMessage= message.concat(", World!").toUpperCase();
+
+            System.out.println(newMessage);
+
             System.out.println("Connected");
-            new Thread(new Server(sock)).start();
+            new Thread(new Server(sock,newMessage)).start();
         }
     }
+
     public void run() {
         try {
-            PrintStream pstream = new PrintStream
-                    (csocket.getOutputStream());
-            for (int i = 100; i >= 0; i--) {
-                pstream.println(i +
-                        " bottles of beer on the wall");
-            }
+            PrintStream pstream = new PrintStream (csocket.getOutputStream());
+            pstream.println(msg );
             pstream.close();
             csocket.close();
         }
