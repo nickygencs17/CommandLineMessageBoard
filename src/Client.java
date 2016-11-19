@@ -21,7 +21,7 @@ public class Client
         try
         {
             String host = "localhost";
-            int port = 25000;
+            int port = 1234;
             InetAddress address = InetAddress.getByName(host);
             socket = new Socket(address, port);
 
@@ -30,7 +30,7 @@ public class Client
             OutputStreamWriter osw = new OutputStreamWriter(os);
             BufferedWriter bw = new BufferedWriter(osw);
             Scanner keyboard = new Scanner(System.in);
-            System.out.println("Enter an integer");
+            System.out.println("Enter an String");
             String number = keyboard.nextLine();
 
 
