@@ -7,6 +7,7 @@ import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.util.Scanner;
+import java.util.StringTokenizer;
 
 public class Client
 {
@@ -16,7 +17,7 @@ public class Client
     public static void main(String args[])
     {
 
-        parseArgs(args);
+
 
         try
         {
@@ -30,11 +31,10 @@ public class Client
             OutputStreamWriter osw = new OutputStreamWriter(os);
             BufferedWriter bw = new BufferedWriter(osw);
             Scanner keyboard = new Scanner(System.in);
-            System.out.println("Enter an String");
-            String number = keyboard.nextLine();
+            System.out.println("Enter an Command");
+            String command = keyboard.nextLine();
 
-
-            String sendMessage = number + "\n";
+            String sendMessage = command + "\n";
             bw.write(sendMessage);
             bw.flush();
             System.out.println("Message sent to the server : "+sendMessage);
@@ -63,10 +63,10 @@ public class Client
             }
         }
     }
-    public static void parseArgs(String args[]){
+    public static void parseArgs(String cmd){
 
-        for(int i =0; i<args.length; i++) {
-            System.out.println(args[i]);
+        if(cmd.contentEquals("login")){
+
         }
     }
 }
