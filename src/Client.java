@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.InetAddress;
 import java.net.Socket;
+import java.util.Scanner;
 
 public class Client
 {
@@ -14,6 +15,9 @@ public class Client
 
     public static void main(String args[])
     {
+
+        parseArgs(args);
+
         try
         {
             String host = "localhost";
@@ -25,8 +29,10 @@ public class Client
             OutputStream os = socket.getOutputStream();
             OutputStreamWriter osw = new OutputStreamWriter(os);
             BufferedWriter bw = new BufferedWriter(osw);
+            Scanner keyboard = new Scanner(System.in);
+            System.out.println("Enter an integer");
+            String number = keyboard.nextLine();
 
-            String number = "2";
 
             String sendMessage = number + "\n";
             bw.write(sendMessage);
@@ -55,6 +61,12 @@ public class Client
             {
                 e.printStackTrace();
             }
+        }
+    }
+    public static void parseArgs(String args[]){
+
+        for(int i =0; i<args.length; i++) {
+            System.out.println(args[i]);
         }
     }
 }
