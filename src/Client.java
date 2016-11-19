@@ -63,10 +63,5 @@ public class Client
             }
         }
     }
-    public static void parseArgs(String cmd){
 
-        if(cmd.contentEquals("login")){
-
-        }
-    }
 }

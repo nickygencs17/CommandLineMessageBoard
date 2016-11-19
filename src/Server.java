@@ -13,6 +13,7 @@ public class Server implements Runnable {
     Socket csocket;
     String msg;
     ArrayList <String> cmdList ;
+    boolean loggedIn = false;
 
 
 
@@ -45,9 +46,90 @@ public class Server implements Runnable {
             System.out.println(newMessage);
 
             System.out.println("Connected");
-
+            parseArgs(commmandList);
             new Thread(new Server(sock,newMessage, commmandList)).start();
         }
+    }
+    public void parseArgs(ArrayList commandList){
+        if(commandList.get(1).equals("login") && loggedIn == false){
+
+             if(commandList.size()==2){
+                 loggedIn = true;
+                 String userName = commandList.get(2).toString();
+                 System.out.println(userName);
+             }
+             else{
+                 System.out.println("Invalid Number of Arguments");
+             }
+
+        }
+        else if(commandList.get(1).equals("help")){
+            if(commandList.size()==1){
+                String help = commandList.get(1).toString();
+                System.out.println(help);
+            }
+            else{
+                System.out.println("Invalid Number of Arguments");
+            }
+
+        }
+        else if(commandList.get(1).equals("ag") && loggedIn == true){
+            int n = returnN(commandList);
+            if (n == 0){
+                System.out.println("Invalid Number of Arguments");
+            }
+            else{
+                //run ag command
+            }
+
+        }
+        else if(commandList.get(1).equals("sg") && loggedIn == true){
+            int n = returnN(commandList);
+            if (n == 0){
+                System.out.println("Invalid Number of Arguments");
+            }
+            else{
+                //run sg command
+            }
+
+        }
+        else if(commandList.get(1).equals("rg") && loggedIn == true){
+            int n = returnN(commandList);
+            if (n == 0){
+                System.out.println("Invalid Number of Arguments");
+            }
+            else{
+                //run rg command
+            }
+
+        }
+        else if(commandList.get(1).equals("logout") && loggedIn == true){
+
+            if(commandList.size()==2){
+                loggedIn = false;
+                String userName = commandList.get(2).toString();
+                System.out.println(userName);
+            }
+            else{
+                System.out.println("Invalid Number of Arguments");
+            }
+        }
+
+
+    }
+    public int returnN(ArrayList commandList){
+        if(commandList.size()==3){
+            String n = commandList.get(3).toString();
+            int number = Integer.parseInt(n);
+            return number;
+        }
+        else if(commandList.size()==2){
+            return 5;
+        }
+        else{
+           return 0;
+        }
+
     }
 
     public void run() {
@@ -62,4 +144,5 @@ public class Server implements Runnable {
             System.out.println(e);
         }
     }
+
 }
