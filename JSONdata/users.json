@@ -1,0 +1,12 @@
+{
+"existingUsers":[
+					{
+				 "userName":"admin",
+				 "userFile": "JSONData/users/admin.json"
+				 	},
+   					{
+   				 "userName":"user",
+   				 "userFile": "JSONData/users/user.json"
+   				 	}
+]
+}
