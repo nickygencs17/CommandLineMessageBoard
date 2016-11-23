@@ -45,7 +45,12 @@ public class Client
                 InputStream is = socket.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
                 BufferedReader br = new BufferedReader(isr);
-                String message = br.readLine();
+                String message ="";
+                String line = "";
+                int i;
+                while((line= br.readLine()) != null){
+                    message+=line + "\n";
+                }
                 System.out.println("Message received from the server : " + message);
                 if(message.equals("logout")){
                     loop = false;

@@ -17,6 +17,7 @@ public class Server implements Runnable{
     ArrayList <String> cmdList ;
     boolean loggedIn = false;
     ArrayList <Room> rooms;
+    ArrayList <User> users;
 
 
 
@@ -26,17 +27,125 @@ public class Server implements Runnable{
         this.cmdList = ls;
     }
 
+    public ArrayList<Room> getRooms() {
+        return rooms;
+    }
+
+    public void setRooms(ArrayList<Room> rooms) {
+        this.rooms = rooms;
+    }
+
+    public void setUsers(ArrayList<User> users) {
+        this.users = users;
+    }
+
+    public ArrayList<User> getUsers() {
+
+        return users;
+    }
+
+    public void init(){
+
+        try {
+            initUsers();
+        } catch (FileNotFoundException e){
+            System.out.print(e);
+        }
+
+        try{
+            initRooms();
+        }
+        catch (FileNotFoundException e){
+            System.out.print(e);
+        }
+
+    }
+    public void initUsers() throws FileNotFoundException {
+        StringBuilder sb = new StringBuilder();
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader("JSONdata/users.json"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("existingUsers");
+            ArrayList<User> Users= new ArrayList<>();
+            for (int i = 0; i < arr.size(); i++)
+            {
+                JSONObject j = (JSONObject)arr.get(i);
+                String un = (String) j.get("userName");
+                String fn = (String) j.get("userFile");
+                Object newobj = parser.parse(new FileReader(fn));
+
+                JSONObject json = (JSONObject) newobj;
+                JSONArray array = (JSONArray) json.get("subscriptions");
+
+                User u = new User(un,fn,array);
+
+                Users.add(u);
+
+            }
+            setUsers(Users);
+            for(int i =0; i<users.size(); i++){
+
+                System.out.println(users.get(i).getUserName());
+            }
+
+
+            //System.out.println(res);
+
+        }
+
+        catch (Exception v){
+            System.out.println(v);
+        }
+
+    }
+    public void initRooms() throws FileNotFoundException{
+        StringBuilder sb = new StringBuilder();
+        JSONParser parser = new JSONParser();
+        try {
+            Object obj = parser.parse(new FileReader("JSONdata/ag.json"));
+
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("ag");
+            ArrayList<Room> Rooms = new ArrayList<>();
+            for (int i = 0; i < arr.size(); i++)
+            {
+                JSONObject j = (JSONObject)arr.get(i);
+                String rf = (String) j.get("roomFile");
+                int index = Integer.parseInt((String)j.get("index"));
+                String rn = (String) j.get("roomName");
+                Room r = new Room(rn,rf,index);
+                Rooms.add(r);
+            }
+            setRooms(Rooms);
+            for(int i =0; i<rooms.size(); i++){
+                rooms.get(i).getRoomName();
+            }
+
+        }
+
+        catch (Exception v){
+            System.out.println(v);
+        }
+
+
+    }
+
     public void setMsg(String msg) {
+
         this.msg = msg;
     }
 
     public void parseArgs(ArrayList commandList){
+        init();
         if(commandList.get(0).equals("login") && loggedIn == false){
 
             if(commandList.size()==2){
                 loggedIn = true;
                 String userName = commandList.get(1).toString();
                 System.out.println(userName);
+
             }
             else{
                 System.out.println("Invalid Number of Arguments");
@@ -59,12 +168,7 @@ public class Server implements Runnable{
                 System.out.println("Invalid Number of Arguments");
             }
             else{
-                try{
-                    agCommand(n);
-                }
-                catch(Exception j){
-                    System.out.print(j);
-                }
+                agCommand(n);
             }
 
         }
@@ -116,6 +220,8 @@ public class Server implements Runnable{
         ServerSocket ssock = new ServerSocket(1234);
         System.out.println("Listening");
         while (true) {
+
+
             ArrayList<String> commmandList = new ArrayList<>();
             Socket sock = ssock.accept();
             InputStream is = sock.getInputStream();
@@ -153,43 +259,21 @@ public class Server implements Runnable{
         }
 
     }
-    public void agCommand(int n) throws IOException, ParseException{
+    public void agCommand(int n) {
 //        System.out.println("Working Directory = " +
 //                System.getProperty("user.dir"));
-        StringBuilder sb = new StringBuilder();
-        JSONParser parser = new JSONParser();
-        try {
-            Object obj = parser.parse(new FileReader("JSONdata/ag.json"));
 
-            JSONObject jsonObject = (JSONObject) obj;
-            JSONArray arr = (JSONArray) jsonObject.get("ag");
-            ArrayList<Room> rooms = new ArrayList<>();
-            for (int i = 0; i < arr.size(); i++)
-            {
-                JSONObject j = (JSONObject)arr.get(i);
-                String rf = (String) j.get("roomFile");
-                int index = Integer.parseInt((String)j.get("index"));
-                String rn = (String) j.get("roomName");
-                Room r = new Room(rn,rf,index);
-                rooms.add(r);
+        String res = "";
+
+        for( int i =0; i<n; i++) {
+            if(i==0){
+                res += "\n";
             }
+            int j = this.rooms.get(i).getIndex()+1;
 
-
-            for( int i =0; i<n; i++) {
-                if(i==0){
-                    sb.append("\n");
-                }
-
-                sb.append( rooms.get(i).getIndex()+1+".  ( )  "+rooms.get(i).getRoomName()+"\n");
-            }
-
+            res+= j+".  ( )  "+this.rooms.get(i).getRoomName()+"\n";
         }
-        catch (Exception v){
-            System.out.println(v);
-        }
-
-        setMsg(sb.toString());
-
+        setMsg(res);
 
 
     }
@@ -199,8 +283,11 @@ public class Server implements Runnable{
         try {
 
             PrintStream pstream = new PrintStream (csocket.getOutputStream());
+
             parseArgs(this.cmdList);
-            pstream.println(msg);
+            System.out.println(this.msg);
+
+            pstream.println(this.msg);
             pstream.close();
             csocket.close();
         }
