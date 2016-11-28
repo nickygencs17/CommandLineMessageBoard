@@ -18,24 +18,28 @@ public class Client
     public static void main(String args[])
     {
         boolean loop = true;
-
+        boolean socketcreated = false;
 
         try
         {
+            OutputStream os;
+            OutputStreamWriter osw;
+            BufferedWriter bw = null;
             while(loop) {
                 String host = "localhost";
                 int port = 1234;
                 InetAddress address = InetAddress.getByName(host);
-                socket = new Socket(address, port);
-
+                if(!socketcreated) {
+                    socket = new Socket(address, port);
+                    os = socket.getOutputStream();
+                    osw = new OutputStreamWriter(os);
+                    bw = new BufferedWriter(osw);
+                    socketcreated = true;
+                }
                 //Send the message to the server
-                OutputStream os = socket.getOutputStream();
-                OutputStreamWriter osw = new OutputStreamWriter(os);
-                BufferedWriter bw = new BufferedWriter(osw);
                 Scanner keyboard = new Scanner(System.in);
                 System.out.println("Enter an Command");
                 String command = keyboard.nextLine();
-
                 String sendMessage = command + "\n";
                 bw.write(sendMessage);
                 bw.flush();
@@ -47,9 +51,14 @@ public class Client
                 BufferedReader br = new BufferedReader(isr);
                 String message ="";
                 String line = "";
-                int i;
-                while((line= br.readLine()) != null){
-                    message+=line + "\n";
+                while((line = br.readLine()) != null)
+                {
+                    if(line.equals("end"))
+                    {
+                        break;
+                    }
+                    if(line.equals("logout")) { socketcreated = false; socket.close();}
+                    message += line + "\n";
                 }
                 System.out.println("Message received from the server : " + message);
                 if(message.equals("logout")){
