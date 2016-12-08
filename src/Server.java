@@ -186,7 +186,7 @@ public class Server extends Thread{
 
     }
 
-    boolean parseArgs(ArrayList commandList, BufferedReader br, PrintWriter pstream){
+    boolean parseArgs(ArrayList commandList, BufferedReader br, PrintWriter pstream) throws Exception{
         init();
         if(commandList.get(0).equals("login") && loggedIn == false){
 
@@ -309,13 +309,20 @@ public class Server extends Thread{
             if (n == 0 ){
                 System.out.println("Invalid Number of Arguments");
             }
-            if (n == 0 ){
+            if (commandList.size() <= 1 || commandList.size() >= 4){
                 System.out.println("Invalid Number of Arguments");
             }
-            if(!currentuser.checksubscribedbyname(commandList.get(1).toString())) {
-                System.out.println("Invalid group name");
+            boolean ret = true;
+            try {
+                ret = currentuser.checksubscribedbyname(commandList.get(1).toString());
+                if (!ret) {
+                    System.out.println("Invalid group name");
+                }
             }
-            else{
+            catch(IOException e){
+                System.out.println("ERROR : " + e);
+            }
+            if(ret){
                 int start = 0;
                 boolean returnvalue1 = rgCommand(n, pstream, start, commandList.get(1).toString());
                 String message;
@@ -471,32 +478,33 @@ public class Server extends Thread{
 
         String res = "";
         boolean returns = true;
-        for(int i = start; i < n+start; i++) {
-            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
-            if(i==start){
-                res += "\n";
-            }
-            String j = currentuser.getSubscriptions().get(i);
-            String sub = " ";
-            int num = 0;
-            Date dt;
-            dt = currentuser.getlastaccessed(j);
-            num = currentuser.numtextsaftertime(j,dt);
-            if(num > 0)
-            {
-                sub = Integer.toString(num);
-            }
-            System.out.println("");
-            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
-            currentuser.updategrouptime(j);
-        }
+//        for(int i = start; i < n+start; i++) {
+//            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
+//            if(i==start){
+//                res += "\n";
+//            }
+//            String j = currentuser.getSubscriptions().get(i);
+//            String sub = " ";
+//            int num = 0;
+//            Date dt;
+//            dt = currentuser.getlastaccessed(j);
+//            num = currentuser.numtextsaftertime(j,dt);
+//            if(num > 0)
+//            {
+//                sub = Integer.toString(num);
+//            }
+//            System.out.println("");
+//            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
+//            currentuser.updategrouptime(j);
+//        }
         JSONObject reply = currentuser.createreplyjson("rg", res, group, currentuser.getUserName());
+        System.out.println("reply : " + reply);
         pstream.println(reply);pstream.println("end");pstream.flush();
         return returns;
     }
  
 
-    public void run() {
+    public void run(){
         PrintWriter pstream = null;
         BufferedReader br;
         InputStreamReader isr;
@@ -517,7 +525,18 @@ public class Server extends Thread{
                     commmandList.add(tok.nextToken());
                 }
                 this.setCmdList(commmandList);
-                logout = parseArgs(this.cmdList, br, pstream);
+                try {
+                    try
+                    {
+                        logout = parseArgs(this.cmdList, br, pstream);
+                    }
+                    catch (Exception e){
+                        System.out.println("ERROR : " + e);
+                    }
+                }
+                catch(Exception e) {
+                    System.out.println("ERROR : " + e);
+                }
                 //pstream.println(this.msg);pstream.println("end");pstream.flush();
                 pstream.println("end");pstream.flush();
                 System.out.println("Message received from server is " + this.msg);

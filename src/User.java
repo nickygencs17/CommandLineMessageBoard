@@ -61,15 +61,26 @@ public class User {
             updatejsonusers(index,"remove");
         }
     }
-    public boolean checksubscribedbyname(String s) {
-        for(int i = 0; i < subscriptions.size(); i++) {
-            if(subscriptions.get(i).equals(s)) {
-                return true;
+    public boolean checksubscribedbyname(String s) throws Exception {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("JSONData/ag.json"));
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("ag");
+            for (int i = 0; i < arr.size(); i++) {
+                JSONObject j = (JSONObject) arr.get(i);
+                System.out.println(j.get("roomName").toString());
+                if (j.get("roomName").toString().equals(s)) {
+                    return true;
+                }
             }
         }
+        catch (IOException e) {
+            System.out.println("ERROR : " + e);
+        }
         return false;
-    }
 
+    }
     public void updatejsonusers(int index, String option) {
         try {
             JSONParser parser = new JSONParser();
