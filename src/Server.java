@@ -47,7 +47,7 @@ public class Server extends Thread{
 
     boolean userexists(String username)
     {
-        for(int i = 0; i<users.size(); i++)
+        for(int i = 0; i < users.size(); i++)
         {
             if(users.get(i).getUserName().equals(username))
             {
@@ -471,25 +471,25 @@ public class Server extends Thread{
 
         String res = "";
         boolean returns = true;
-//        for(int i = start; i < n+start; i++) {
-//            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
-//            if(i==start){
-//                res += "\n";
-//            }
-//            String j = currentuser.getSubscriptions().get(i);
-//            String sub = " ";
-//            int num = 0;
-//            Date dt;
-//            dt = currentuser.getlastaccessed(j);
-//            num = currentuser.numtextsaftertime(j,dt);
-//            if(num > 0)
-//            {
-//                sub = Integer.toString(num);
-//            }
-//            System.out.println("");
-//            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
-//            currentuser.updategrouptime(j);
-//        }
+        for(int i = start; i < n+start; i++) {
+            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
+            if(i==start){
+                res += "\n";
+            }
+            String j = currentuser.getSubscriptions().get(i);
+            String sub = " ";
+            int num = 0;
+            Date dt;
+            dt = currentuser.getlastaccessed(j);
+            num = currentuser.numtextsaftertime(j,dt);
+            if(num > 0)
+            {
+                sub = Integer.toString(num);
+            }
+            System.out.println("");
+            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
+            currentuser.updategrouptime(j);
+        }
         JSONObject reply = currentuser.createreplyjson("rg", res, group, currentuser.getUserName());
         pstream.println(reply);pstream.println("end");pstream.flush();
         return returns;
@@ -497,7 +497,6 @@ public class Server extends Thread{
  
 
     public void run() {
-        //PrintStream pstream;
         PrintWriter pstream = null;
         BufferedReader br;
         InputStreamReader isr;
