@@ -305,13 +305,58 @@ public class Server extends Thread{
 
         }
         else if(commandList.get(0).equals("rg") && loggedIn == true){
-            int n = returnN(commandList);
-            if (n == 0){
+            int n = returnNforrg(commandList);
+            if (n == 0 ){
                 System.out.println("Invalid Number of Arguments");
             }
-            else{
-                //run rg command
+            if (n == 0 ){
+                System.out.println("Invalid Number of Arguments");
             }
+            if(!currentuser.checksubscribedbyname(commandList.get(1).toString())) {
+                System.out.println("Invalid group name");
+            }
+            else{
+                int start = 0;
+                boolean returnvalue1 = rgCommand(n, pstream, start, commandList.get(1).toString());
+                String message;
+                int j = n;
+                try {
+                    while((message = br.readLine()) != null){
+                        ArrayList<String> commands = new ArrayList<>();
+                        StringTokenizer tok = new StringTokenizer(message);
+                        while (tok.hasMoreTokens()) {
+                            commands.add(tok.nextToken());
+                        }
+                        if(commands.get(0).equals("q") && commandList.size() == 1) {
+                            break;
+                        }
+                        if(commands.get(0).equals("u") && commands.size() > 1) {
+                            for(int i =1; i < commands.size(); i++) {
+                                int index = Integer.parseInt(commands.get(i));
+                                int ind = Integer.parseInt(currentuser.getSubscriptions().get(index - 1));
+                                currentuser.unsubscribegroup(ind);
+                                pstream.println("end");pstream.flush();
+                                init();
+                            }
+                        }
+                        else if(commands.get(0).equals("n")) {
+                            start += n;
+                            returnvalue1 = rgCommand(n, pstream, start, commandList.get(1).toString());
+                            if(!returnvalue1) {
+                                break;
+                            }
+                        }
+                        else if(commands.size() > 0){
+                            //executespecialsg(commands);
+                            pstream.println("end");pstream.flush();
+                        }
+                    }}
+                catch (IOException e)
+                {
+                    System.out.println("Exception : " + e);
+                }
+            }
+
 
         }
         else if(commandList.get(0).equals("logout") && loggedIn == true){
@@ -359,6 +404,20 @@ public class Server extends Thread{
         }
 
     }
+    public int returnNforrg(ArrayList commandList){
+        if(commandList.size()==3){
+            String n = commandList.get(2).toString();
+            int number = Integer.parseInt(n);
+            return number;
+        }
+        else if(commandList.size() == 2){
+            return 5;
+        }
+        else{
+            return 0;
+        }
+
+    }
     public boolean agCommand(int n, PrintWriter pstream, int start) {
 
         String res = "";
@@ -376,9 +435,11 @@ public class Server extends Thread{
             }
             res+= j+".  (" + sub + ")  "+this.rooms.get(i).getRoomName()+"\n";
         }
-        pstream.println(res);pstream.println("end");pstream.flush();
+        JSONObject reply = currentuser.createreplyjson("ag", res, null, null);
+        pstream.println(reply);pstream.println("end");pstream.flush();
           return returns;
     }
+
     public boolean sgCommand(int n, PrintWriter pstream, int start) {
 
         String res = "";
@@ -401,7 +462,36 @@ public class Server extends Thread{
             res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
             currentuser.updategrouptime(j);
         }
-        pstream.println(res);pstream.println("end");pstream.flush();
+        JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+        pstream.println(reply);pstream.println("end");pstream.flush();
+        return returns;
+    }
+
+    public boolean rgCommand(int n, PrintWriter pstream, int start, String group) {
+
+        String res = "";
+        boolean returns = true;
+//        for(int i = start; i < n+start; i++) {
+//            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
+//            if(i==start){
+//                res += "\n";
+//            }
+//            String j = currentuser.getSubscriptions().get(i);
+//            String sub = " ";
+//            int num = 0;
+//            Date dt;
+//            dt = currentuser.getlastaccessed(j);
+//            num = currentuser.numtextsaftertime(j,dt);
+//            if(num > 0)
+//            {
+//                sub = Integer.toString(num);
+//            }
+//            System.out.println("");
+//            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
+//            currentuser.updategrouptime(j);
+//        }
+        JSONObject reply = currentuser.createreplyjson("rg", res, group, currentuser.getUserName());
+        pstream.println(reply);pstream.println("end");pstream.flush();
         return returns;
     }
  

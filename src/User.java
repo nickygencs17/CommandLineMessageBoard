@@ -61,6 +61,14 @@ public class User {
             updatejsonusers(index,"remove");
         }
     }
+    public boolean checksubscribedbyname(String s) {
+        for(int i = 0; i < subscriptions.size(); i++) {
+            if(subscriptions.get(i).equals(s)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void updatejsonusers(int index, String option) {
         try {
@@ -90,7 +98,6 @@ public class User {
                         files.write(jsonObject.toJSONString());
                         files.flush();
                         files.close();
-
                     } catch (IOException e) {
                         e.printStackTrace();
                     }
@@ -228,5 +235,26 @@ public class User {
         }
 
         return count;
+    }
+
+    public JSONObject createreplyjson(String cmd, String text, String group, String author) {
+        JSONObject sub = new JSONObject();
+        try {
+            if(cmd.equals("ag") || cmd.equals("sg") || cmd.equals("rg")) {
+                sub.put("type", cmd);
+                sub.put("message", text);
+                return sub;
+            }
+            if(cmd.equals("rgp")) {
+                sub.put("type", cmd);
+                sub.put("author", author);
+                sub.put("group", group);
+                return sub;
+            }
+        }
+        catch (Exception v){
+            System.out.println("Creating mesage " + v);
+        }
+        return sub;
     }
 }
