@@ -11,6 +11,8 @@ import org.json.simple.parser.JSONParser;
 public class Client {
 
     private static Socket socket;
+    private static boolean inputChnage = false;
+    private static String resMessage = "";
 
 
     public static void main(String args[]) {
@@ -18,6 +20,7 @@ public class Client {
         boolean socketcreated = false;
 
         try {
+            String sendMessage="";
             OutputStream os;
             OutputStreamWriter osw;
             BufferedWriter bw = null;
@@ -33,12 +36,18 @@ public class Client {
                     socketcreated = true;
                 }
                 //Send the message to the server
-                Scanner keyboard = new Scanner(System.in);
-                System.out.println("Enter an Command");
-                String command = keyboard.nextLine();
-                String sendMessage = command + "\n";
+                if(inputChnage== false ) {
+                    Scanner keyboard = new Scanner(System.in);
+                    System.out.println("Enter an Command");
+                    String command = keyboard.nextLine();
+                    sendMessage = command + "\n";
+                }
+                else{
+                    sendMessage = resMessage;
+                }
                 bw.write(sendMessage);
                 bw.flush();
+
                 System.out.println("Message sent to the server : " + sendMessage);
 
                 //Get the return message from the server
@@ -55,12 +64,24 @@ public class Client {
                         socketcreated = false;
                         socket.close();
                     }
+                    else{
+
+                    }
                     message += line + "\n";
                 }
-                String newMessage = readMessage(message);
+
+                resMessage = readMessage(message);
+                if(message.equals(resMessage)){
+                    inputChnage= false;
+
+                }
+                else {
+                    inputChnage = true;
+                }
 
 
-                System.out.println("Message received from the server : " + newMessage);
+                //System.out.println("Message received from the server : " );
+
                 if (message.equals("logout")) {
                     loop = false;
                 }
