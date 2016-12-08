@@ -81,25 +81,31 @@ public class Client {
     public static String readMessage(String message) {
         String returnMessage = "";
         JSONParser parser = new JSONParser();
+        if(message.length() !=0 ){
+            System.out.println(message);
+            try {
+                Object obj = parser.parse(message);
 
+                JSONObject jsonObject = (JSONObject) obj;
+                String s = jsonObject.get("type").toString();
 
-        try {
-            Object obj = parser.parse(message);
+                if (s.equals("rgp")) {
+                    returnMessage = readPost(message);
+                } else {
+                    returnMessage = jsonObject.get("message").toString();
+                }
 
-            JSONObject jsonObject = (JSONObject) obj;
-            String s = jsonObject.get("type").toString();
-
-            if (s.equals("rgp")) {
-                returnMessage = readPost(message);
-            } else {
-                returnMessage = jsonObject.get("message").toString();
+            } catch (Exception v) {
+                System.out.println(v);
             }
-
-        } catch (Exception v) {
-            System.out.println(v);
+            return returnMessage;
+        }
+        else{
+            return message;
         }
 
-        return returnMessage;
+
+
 
 
     }
