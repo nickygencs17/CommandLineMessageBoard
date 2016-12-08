@@ -275,14 +275,8 @@ public class Server extends Thread{
                         if(commands.get(0).equals("q") && commandList.size() == 1) {
                             break;
                         }
-                        if(commands.get(0).equals("u") && commands.size() > 1) {
-                            for(int i =1; i < commands.size(); i++) {
-                                int index = Integer.parseInt(commands.get(i));
-                                int ind = Integer.parseInt(currentuser.getSubscriptions().get(index - 1));
-                                currentuser.unsubscribegroup(ind);
-                                pstream.println("end");pstream.flush();
-                                init();
-                            }
+                        if(commands.get(0).equals("p") && commands.size() > 1) {
+
                         }
                         else if(commands.get(0).equals("n")) {
                             start += n;
@@ -337,14 +331,10 @@ public class Server extends Thread{
                         if(commands.get(0).equals("q") && commandList.size() == 1) {
                             break;
                         }
-                        if(commands.get(0).equals("u") && commands.size() > 1) {
-                            for(int i =1; i < commands.size(); i++) {
-                                int index = Integer.parseInt(commands.get(i));
-                                int ind = Integer.parseInt(currentuser.getSubscriptions().get(index - 1));
-                                currentuser.unsubscribegroup(ind);
-                                pstream.println("end");pstream.flush();
-                                init();
-                            }
+                        if(commands.get(0).equals("p") && commands.size() == 1) {
+                            JSONObject reply = currentuser.createreplyjson("rgp", null, commandList.get(1).toString(), currentuser.getUserName());
+                            System.out.println("reply : " + reply);
+                            pstream.println(reply);pstream.println("end");pstream.flush();
                         }
                         else if(commands.get(0).equals("n")) {
                             start += n;
@@ -478,25 +468,25 @@ public class Server extends Thread{
 
         String res = "";
         boolean returns = true;
-//        for(int i = start; i < n+start; i++) {
-//            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
-//            if(i==start){
-//                res += "\n";
-//            }
-//            String j = currentuser.getSubscriptions().get(i);
-//            String sub = " ";
-//            int num = 0;
-//            Date dt;
-//            dt = currentuser.getlastaccessed(j);
-//            num = currentuser.numtextsaftertime(j,dt);
-//            if(num > 0)
-//            {
-//                sub = Integer.toString(num);
-//            }
-//            System.out.println("");
-//            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
-//            currentuser.updategrouptime(j);
-//        }
+        for(int i = start; i < n+start; i++) {
+            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
+            if(i==start){
+                res += "\n";
+            }
+            String j = currentuser.getSubscriptions().get(i);
+            String sub = " ";
+            int num = 0;
+            Date dt;
+            dt = currentuser.getlastaccessed(j);
+            num = currentuser.numtextsaftertime(j,dt);
+            if(num > 0)
+            {
+                sub = Integer.toString(num);
+            }
+            System.out.println("");
+            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
+            currentuser.updategrouptime(j);
+        }
         JSONObject reply = currentuser.createreplyjson("rg", res, group, currentuser.getUserName());
         System.out.println("reply : " + reply);
         pstream.println(reply);pstream.println("end");pstream.flush();
