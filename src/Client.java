@@ -132,46 +132,28 @@ public class Client {
             System.out.println(v);
         }
 
+        BufferedReader stdin2 = new BufferedReader(new InputStreamReader(System.in));
+
         System.out.println("Subject:");
         String subject = "";
 
-        Scanner stdin = new Scanner(new BufferedInputStream(System.in));
-        while (stdin.hasNext()) {
-            subject += stdin.nextLine();
-        }
+        Scanner keyboard = new Scanner(System.in);
+        subject= keyboard.nextLine();
+
+
+
         System.out.println("Post:");
-        String post = "";
+        String TERMINATOR_STRING = ".";
 
-//        while (stdin.hasNext()) {
-//            {
-//                if (stdin.equals(".")) {
-//                    if (stdin.next().equals("\n")) {
-//                        break;
-//                    }
-//                }
-//            }
-//            else{
-//                post += stdin;
-//            }
-//
-//        }
-        BufferedReader stdin2 = new BufferedReader(new InputStreamReader(System.in));
-        String line;
-
-        while ((line = stdin2.readLine()) != null && line.length() != 0) {
-            if (line.equals(".")) {
-                if (stdin2.readLine().equals("\n")) {
-                    break;
-                } else {
-                    post += line;
-
-
-                }
-
-            }
-
-
+        java.util.Scanner a = new java.util.Scanner(System.in);
+        StringBuilder post = new StringBuilder();
+        String strLine;
+        while (!(strLine = a.nextLine()).equals(TERMINATOR_STRING)) {
+            post.append(strLine);
+            post.append("\n");
         }
+
+
         JSONArray array = new JSONArray();
         array.add(author);
 
@@ -179,7 +161,7 @@ public class Client {
         sub.put("subject", subject);
         sub.put("group", group);
         sub.put("author", author);
-        sub.put("post", post);
+        sub.put("post", post.toString());
         sub.put("time", datestring);
         sub.put("viewers", array);
 
