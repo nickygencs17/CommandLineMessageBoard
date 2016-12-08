@@ -179,7 +179,7 @@ public class Client {
 
         returnMessage = sub.toJSONString();
 
-
+        System.out.println(returnMessage);
         return returnMessage;
 
     }
