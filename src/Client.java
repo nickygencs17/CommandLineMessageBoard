@@ -71,7 +71,7 @@ public class Client {
                 }
 
                 resMessage = readMessage(message);
-                if(message.equals(resMessage)){
+                if(message.equals(resMessage)|| resMessage.equals("")){
                     inputChnage= false;
 
                 }
@@ -143,11 +143,11 @@ public class Client {
             Object obj = parser.parse(message);
 
             JSONObject jsonObject = (JSONObject) obj;
-            group = jsonObject.get("group").toString();
-            author = jsonObject.get("author ").toString();
+            //group = jsonObject.get("group").toString();
+            author = jsonObject.get("author").toString();
 
         } catch (Exception v) {
-            System.out.println(v);
+            System.out.println("read post : " + v);
         }
 
         BufferedReader stdin2 = new BufferedReader(new InputStreamReader(System.in));
@@ -173,19 +173,18 @@ public class Client {
 
 
         JSONArray array = new JSONArray();
-        array.add(author);
+        array.add(author.toString());
 
         JSONObject sub = new JSONObject();
         sub.put("subject", subject);
-        sub.put("group", group);
         sub.put("author", author);
-        sub.put("post", post.toString());
+        sub.put("text", post.toString());
         sub.put("time", datestring);
         sub.put("viewers", array);
 
         returnMessage = sub.toJSONString();
 
-
+        System.out.println("what i am sending back \n" +returnMessage);
         return returnMessage;
 
     }
