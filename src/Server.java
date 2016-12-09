@@ -491,7 +491,6 @@ public class Server extends Thread{
         pstream.println(reply);pstream.println("end");pstream.flush();
         return returns;
     }
- 
 
     public void run(){
         PrintWriter pstream = null;
@@ -542,6 +541,5 @@ public class Server extends Thread{
                 e.printStackTrace();
             }
         }
-
     }
 }

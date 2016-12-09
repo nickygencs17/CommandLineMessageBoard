@@ -1,7 +1,7 @@
 {
   "messages":[
     {
-      "text":"Hey nick, what's up!",
+      "text":["Hey nick,", "what's up!"],
       "time":"2014-01-16T10:25:00",
       "subject":"CSE 310 final",
       "viewed":["ram", "some"],
@@ -9,7 +9,7 @@
       "id":"1"
     },
     {
-      "text":"Hey khaled, what's up!",
+      "text":["Hey khaled", "what's up!"],
       "time":"2014-01-16T10:25:01",
       "subject":"CSE 310 final",
       "viewed":["ram", "some"],
@@ -17,7 +17,7 @@
       "id":"2"
     },
     {
-      "text":"Hey nick, curry club on sunday?",
+      "text":["Hey nick", "curry club on sunday?"],
       "time":"2014-01-16T10:25:02",
       "subject":"CSE 310 final",
       "viewed":["ram", "some"],
@@ -25,7 +25,7 @@
       "id":"3"
     },
     {
-      "text":"Hey khaled, lucky you done with 320!",
+      "text":["Hey khaled", "lucky you done with 320!"],
       "time":"2014-01-16T10:26:00",
       "subject":"CSE 310 final",
       "viewed":["nick", "some"],
@@ -33,7 +33,7 @@
       "id":"4"
     },
     {
-      "text":"have fun with 320",
+      "text":["have fun with 320"],
       "time":"2014-01-16T10:26:00",
       "subject":"CSE 310 final",
       "viewed":["khaled", "some"],
@@ -41,7 +41,7 @@
       "id":"5"
     },
     {
-      "text":"Hey nick, save me from 320",
+      "text":["Hey nick", "save me from 320"],
       "time":"2014-01-16T10:27:00",
       "subject":"CSE 310 final",
       "viewed":["ram", "some"],
@@ -49,7 +49,7 @@
       "id":"6"
     },
     {
-      "text":"Hey khaled, congrats on your engagement",
+      "text":["Hey khaled", "congrats on your engagement"],
       "time":"2014-01-16T10:28:00",
       "subject":"CSE 310 final",
       "viewed":["ram", "some"],
