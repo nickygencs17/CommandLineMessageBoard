@@ -158,7 +158,7 @@ public class Client {
         Scanner keyboard = new Scanner(System.in);
         subject= keyboard.nextLine();
 
-
+        JSONArray messageArray = new JSONArray();
 
         System.out.println("Post:");
         String TERMINATOR_STRING = ".";
@@ -167,8 +167,11 @@ public class Client {
         StringBuilder post = new StringBuilder();
         String strLine;
         while (!(strLine = a.nextLine()).equals(TERMINATOR_STRING)) {
-            post.append(strLine);
-            post.append("\n");
+            //strLine.concat("\n");
+            if(strLine.length()==0){
+                messageArray.add("\n");
+            }
+            messageArray.add(strLine);
         }
 
 
@@ -178,7 +181,7 @@ public class Client {
         JSONObject sub = new JSONObject();
         sub.put("subject", subject);
         sub.put("author", author);
-        sub.put("text", post.toString());
+        sub.put("text", messageArray);
         sub.put("time", datestring);
         sub.put("viewers", array);
 
