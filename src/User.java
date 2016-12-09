@@ -4,6 +4,7 @@ import org.json.simple.parser.JSONParser;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.FileReader;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Date;
 import java.text.SimpleDateFormat;
@@ -61,7 +62,8 @@ public class User {
             updatejsonusers(index,"remove");
         }
     }
-    public boolean checksubscribedbyname(String s) throws Exception {
+    public boolean checksubscribedbyname (String s) {
+        ArrayList<post> posts = new ArrayList<>();
         try {
             JSONParser parser = new JSONParser();
             Object obj = parser.parse(new FileReader("JSONData/ag.json"));
@@ -69,17 +71,15 @@ public class User {
             JSONArray arr = (JSONArray) jsonObject.get("ag");
             for (int i = 0; i < arr.size(); i++) {
                 JSONObject j = (JSONObject) arr.get(i);
-                System.out.println(j.get("roomName").toString());
                 if (j.get("roomName").toString().equals(s)) {
                     return true;
                 }
             }
         }
-        catch (IOException e) {
-            System.out.println("ERROR : " + e);
+        catch (Exception v){
+            System.out.println("Getting unread posts " + v);
         }
         return false;
-
     }
     public void updatejsonusers(int index, String option) {
         try {
@@ -137,7 +137,7 @@ public class User {
     public int getindex(JSONArray arr, String s) {
         for(int i=0; i<arr.size();i++) {
             JSONObject temp = (JSONObject) arr.get(i);
-            if(temp.get("index").equals(s)) {System.out.println("Group removal Index " + i);
+            if(temp.get("index").equals(s)) {
                 return i;
             }
         }
@@ -170,7 +170,7 @@ public class User {
 
         }
         catch (Exception v){
-            System.out.println("Group Subscription " + v);
+            System.out.println("Updating json " + v);
         }
         return null;
     }
@@ -214,7 +214,7 @@ public class User {
 
         }
         catch (Exception v){
-            System.out.println("Group Subscription " + v);
+            System.out.println("Updating group time " + v);
         }
     }
     public int numtextsaftertime(String index, Date dt) {
@@ -242,7 +242,7 @@ public class User {
             }
         }
         catch (Exception v){
-            System.out.println("Group Subscription " + v);
+            System.out.println("number of texts" + v);
         }
 
         return count;
@@ -267,5 +267,68 @@ public class User {
             System.out.println("Creating mesage " + v);
         }
         return sub;
+    }
+    public ArrayList <post> getunreadpostsfromgroup (String group) {
+        ArrayList<post> posts = new ArrayList<>();
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("JSONData/rooms/" + group));
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("messages");
+            for (int i = arr.size() - 1; i >= 0; i--)
+            {
+                JSONObject singlemesg = (JSONObject)arr.get(i);
+                JSONArray viewed = (JSONArray) singlemesg.get("viewed");
+                int exists = 0;
+                for(int jk = 0; jk < viewed.size(); jk++) {
+                    if(viewed.get(jk).toString().equals(userName)) {
+                        exists = 1;
+                        break;
+                    }
+                }
+                if(exists == 0) {
+                    posts.add(new post(Integer.parseInt(singlemesg.get("id").toString()),
+                            singlemesg.get("text").toString(),
+                            singlemesg.get("time").toString(),
+                            singlemesg.get("subject").toString(),
+                            singlemesg.get("author").toString(), 0));
+                }
+            }
+        }
+        catch (Exception v){
+            System.out.println("Getting unread posts " + v);
+        }
+        return posts;
+    }
+    public ArrayList <post> getreadpostsfromgroup (String group, ArrayList<post> posts) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("JSONData/rooms/" + group));
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("messages");
+            for (int i = arr.size() - 1; i >= 0; i--)
+            {
+                JSONObject singlemesg = (JSONObject)arr.get(i);
+                JSONArray viewed = (JSONArray) singlemesg.get("viewed");
+                int exists = 0;
+                for(int jk = 0; jk < viewed.size(); jk++) {
+                    if(viewed.get(jk).toString().equals(userName)) {
+                        exists = 1;
+                        break;
+                    }
+                }
+                if(exists == 1) {
+                    posts.add(new post(Integer.parseInt(singlemesg.get("id").toString()),
+                                singlemesg.get("text").toString(),
+                                singlemesg.get("time").toString(),
+                                singlemesg.get("subject").toString(),
+                                singlemesg.get("author").toString(), 1));
+                }
+            }
+        }
+        catch (Exception v){
+            System.out.println("Getting read posts " + v);
+        }
+        return posts;
     }
 }

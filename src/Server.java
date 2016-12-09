@@ -186,7 +186,7 @@ public class Server extends Thread{
 
     }
 
-    boolean parseArgs(ArrayList commandList, BufferedReader br, PrintWriter pstream) throws Exception{
+    boolean parseArgs(ArrayList commandList, BufferedReader br, PrintWriter pstream){
         init();
         if(commandList.get(0).equals("login") && loggedIn == false){
 
@@ -225,6 +225,9 @@ public class Server extends Thread{
                 int j = n;
                 try {
                 while((message = br.readLine()) != null){
+                    if(message.equals("")){
+                        continue;
+                    }
                     if(!returnvalue) {
                         break;
                     }
@@ -267,6 +270,9 @@ public class Server extends Thread{
                 int j = n;
                 try {
                     while((message = br.readLine()) != null){
+                        if(message.equals("")){
+                            continue;
+                        }
                         ArrayList<String> commands = new ArrayList<>();
                         StringTokenizer tok = new StringTokenizer(message);
                         while (tok.hasMoreTokens()) {
@@ -300,21 +306,19 @@ public class Server extends Thread{
         }
         else if(commandList.get(0).equals("rg") && loggedIn == true){
             int n = returnNforrg(commandList);
-            if (n == 0 ){
-                System.out.println("Invalid Number of Arguments");
-            }
-            if (commandList.size() <= 1 || commandList.size() >= 4){
-                System.out.println("Invalid Number of Arguments");
+            if (n == 0 || commandList.size() <= 1 || commandList.size() >= 4){
+                String res = "Invalid Number of Arguments";
+                JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+                pstream.println(reply);pstream.println("end");pstream.flush();
+                return false;
             }
             boolean ret = true;
-            try {
-                ret = currentuser.checksubscribedbyname(commandList.get(1).toString());
-                if (!ret) {
-                    System.out.println("Invalid group name");
-                }
-            }
-            catch(IOException e){
-                System.out.println("ERROR : " + e);
+            ret = currentuser.checksubscribedbyname(commandList.get(1).toString());
+            if (!ret) {
+                String res = "Invalid group name";
+                JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+                pstream.println(reply);pstream.println("end");pstream.flush();
+                return false;
             }
             if(ret){
                 int start = 0;
@@ -322,7 +326,8 @@ public class Server extends Thread{
                 String message;
                 int j = n;
                 try {
-                    while((message = br.readLine()) != null){
+                    while((message = br.readLine()) != null) {
+                        System.out.println("message :" + message + ".");
                         ArrayList<String> commands = new ArrayList<>();
                         StringTokenizer tok = new StringTokenizer(message);
                         while (tok.hasMoreTokens()) {
@@ -333,7 +338,6 @@ public class Server extends Thread{
                         }
                         if(commands.get(0).equals("p") && commands.size() == 1) {
                             JSONObject reply = currentuser.createreplyjson("rgp", null, commandList.get(1).toString(), currentuser.getUserName());
-                            System.out.println("reply : " + reply);
                             pstream.println(reply);pstream.println("end");pstream.flush();
                         }
                         else if(commands.get(0).equals("n")) {
@@ -344,7 +348,6 @@ public class Server extends Thread{
                             }
                         }
                         else if(commands.size() > 0){
-                            //executespecialsg(commands);
                             pstream.println("end");pstream.flush();
                         }
                     }}
@@ -352,8 +355,9 @@ public class Server extends Thread{
                 {
                     System.out.println("Exception : " + e);
                 }
+                System.out.println("not here 2");
             }
-
+            System.out.println("not here 3");
 
         }
         else if(commandList.get(0).equals("logout") && loggedIn == true){
@@ -468,27 +472,22 @@ public class Server extends Thread{
 
         String res = "";
         boolean returns = true;
+        ArrayList<post> posts = new ArrayList<>();
+        posts = currentuser.getunreadpostsfromgroup(group);
+        currentuser.getreadpostsfromgroup(group, posts);
         for(int i = start; i < n+start; i++) {
-            if(currentuser.getSubscriptions().size() <= i){ returns = false;break;}
+            if(posts.size() <= i){ returns = false;break;}
             if(i==start){
                 res += "\n";
             }
-            String j = currentuser.getSubscriptions().get(i);
+            String j = posts.get(i).gettime() + "    " + posts.get(i).getmessage();
             String sub = " ";
-            int num = 0;
-            Date dt;
-            dt = currentuser.getlastaccessed(j);
-            num = currentuser.numtextsaftertime(j,dt);
-            if(num > 0)
-            {
-                sub = Integer.toString(num);
+            if(!posts.get(i).isread()) {
+                sub = "N";
             }
-            System.out.println("");
-            res+= Integer.toString(i+1)+".  (" + sub + ")  "+this.rooms.get(Integer.parseInt(j)).getRoomName()+"\n";
-            currentuser.updategrouptime(j);
+            res+= Integer.toString(i+1)+".  " + sub + "  "+ j +"\n";
         }
         JSONObject reply = currentuser.createreplyjson("rg", res, group, currentuser.getUserName());
-        System.out.println("reply : " + reply);
         pstream.println(reply);pstream.println("end");pstream.flush();
         return returns;
     }
@@ -515,21 +514,9 @@ public class Server extends Thread{
                     commmandList.add(tok.nextToken());
                 }
                 this.setCmdList(commmandList);
-                try {
-                    try
-                    {
-                        logout = parseArgs(this.cmdList, br, pstream);
-                    }
-                    catch (Exception e){
-                        System.out.println("ERROR : " + e);
-                    }
-                }
-                catch(Exception e) {
-                    System.out.println("ERROR : " + e);
-                }
+                logout = parseArgs(this.cmdList, br, pstream);
                 //pstream.println(this.msg);pstream.println("end");pstream.flush();
                 pstream.println("end");pstream.flush();
-                System.out.println("Message received from server is " + this.msg);
                 //pstream.close();
                 if(logout)
                 {

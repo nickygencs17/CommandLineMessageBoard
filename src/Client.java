@@ -113,7 +113,9 @@ public class Client {
                 if (s.equals("rgp")) {
                     returnMessage = readPost(message);
                 } else {
-                    returnMessage = jsonObject.get("message").toString();
+                   // returnMessage = jsonObject.get("message").toString();
+                    System.out.println(jsonObject.get("message").toString());
+                    returnMessage = "";
                 }
 
             } catch (Exception v) {
@@ -124,11 +126,6 @@ public class Client {
         else{
             return message;
         }
-
-
-
-
-
     }
 
     public static String readPost(String message) throws IOException {
