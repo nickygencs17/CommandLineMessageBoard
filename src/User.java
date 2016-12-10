@@ -287,8 +287,13 @@ public class User {
                     }
                 }
                 if(exists == 0) {
+                    ArrayList<String> postarray = new ArrayList<>();
+                    JSONArray texts = (JSONArray) singlemesg.get("text");
+                    for(int q = 0; q < texts.size(); q++) {
+                        postarray.add(texts.get(q).toString());
+                    }
                     posts.add(new post(Integer.parseInt(singlemesg.get("id").toString()),
-                            singlemesg.get("text").toString(),
+                            postarray,
                             singlemesg.get("time").toString(),
                             singlemesg.get("subject").toString(),
                             singlemesg.get("author").toString(), 0));
@@ -318,11 +323,16 @@ public class User {
                     }
                 }
                 if(exists == 1) {
+                    ArrayList<String> postarray = new ArrayList<>();
+                    JSONArray texts = (JSONArray) singlemesg.get("text");
+                    for(int q = 0; q < texts.size(); q++) {
+                        postarray.add(texts.get(q).toString());
+                    }
                     posts.add(new post(Integer.parseInt(singlemesg.get("id").toString()),
-                                singlemesg.get("text").toString(),
-                                singlemesg.get("time").toString(),
-                                singlemesg.get("subject").toString(),
-                                singlemesg.get("author").toString(), 1));
+                            postarray,
+                            singlemesg.get("time").toString(),
+                            singlemesg.get("subject").toString(),
+                            singlemesg.get("author").toString(), 1));
                 }
             }
         }
@@ -330,5 +340,60 @@ public class User {
             System.out.println("Getting read posts " + v);
         }
         return posts;
+    }
+    public void markpostasread (int ind, String group) {
+        try {
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("JSONData/rooms/" + group));
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("messages");
+            for (int i = arr.size() - 1; i >= 0; i--)
+            {
+                JSONObject singlemesg = (JSONObject)arr.get(i);
+                if(singlemesg.get("id").toString().equals(Integer.toString(ind))) {
+                    JSONArray viewed = (JSONArray) singlemesg.get("viewed");
+                    viewed.add(userName);
+                    break;
+                }
+            }
+            try {
+                FileWriter files = new FileWriter("JSONData/rooms/" + group);
+                files.write(jsonObject.toJSONString());
+                files.flush();
+                files.close();
+
+            } catch (IOException e) {
+                System.out.println("writing to json" + e);
+            }
+
+        }
+        catch (Exception v){
+            System.out.println("Marking read posts " + v);
+        }
+    }
+
+    public void addpostogroup (String mesg, String group) {
+        try {
+            JSONObject ob = (JSONObject) new JSONParser().parse(mesg);
+            JSONParser parser = new JSONParser();
+            Object obj = parser.parse(new FileReader("JSONData/rooms/" + group));
+            JSONObject jsonObject = (JSONObject) obj;
+            JSONArray arr = (JSONArray) jsonObject.get("messages");
+            arr.add(ob);
+
+            try {
+                FileWriter files = new FileWriter("JSONData/rooms/" + group);
+                files.write(jsonObject.toJSONString());
+                files.flush();
+                files.close();
+
+            } catch (IOException e) {
+                System.out.println("adding post to json" + e);
+            }
+
+        }
+        catch (Exception v){
+            System.out.println("adding post to json catch " + v);
+        }
     }
 }

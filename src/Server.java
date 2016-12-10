@@ -327,18 +327,25 @@ public class Server extends Thread{
                 int j = n;
                 try {
                     while((message = br.readLine()) != null) {
-                        System.out.println("message :" + message + ".");
                         ArrayList<String> commands = new ArrayList<>();
                         StringTokenizer tok = new StringTokenizer(message);
                         while (tok.hasMoreTokens()) {
                             commands.add(tok.nextToken());
                         }
-                        if(commands.get(0).equals("q") && commandList.size() == 1) {
+                        if(commands.get(0).equals("q") && commands.size() == 1) {
                             break;
                         }
-                        if(commands.get(0).equals("p") && commands.size() == 1) {
+                        else if(commands.get(0).equals("p") && commands.size() == 1) {
                             JSONObject reply = currentuser.createreplyjson("rgp", null, commandList.get(1).toString(), currentuser.getUserName());
-                            pstream.println(reply);pstream.println("end");pstream.flush();
+                            pstream.println(reply);//pstream.println("end");pstream.flush();
+                            String messageobject;
+                            while((messageobject = br.readLine()) != null) {
+                                if(messageobject.equals("")) {
+                                    continue;
+                                }
+                                currentuser.addpostogroup(messageobject, commandList.get(1).toString());
+                                break;
+                            }
                         }
                         else if(commands.get(0).equals("n")) {
                             start += n;
@@ -347,8 +354,55 @@ public class Server extends Thread{
                                 break;
                             }
                         }
-                        else if(commands.size() > 0){
-                            pstream.println("end");pstream.flush();
+                        else if(commands.get(0).equals("r") && commands.size() == 2) {
+                            String[] inds = commands.get(1).toString().split("-");
+                            int begind = Integer.parseInt(inds[0]);
+                            int endind = begind + 1;
+                            endind = Integer.parseInt(inds[1]);
+                            ArrayList<post> posts = new ArrayList<>();
+                            posts = currentuser.getunreadpostsfromgroup(commandList.get(1).toString());
+                            currentuser.getreadpostsfromgroup(commandList.get(1).toString(), posts);
+                            for(int w=begind - 1; w < endind - 1; w++){
+                                currentuser.markpostasread(posts.get(w).getpostid(), commandList.get(1).toString());
+                            }
+                            String res = "";
+                            JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+                            pstream.println(reply);pstream.println("end");pstream.flush();
+                        }
+                        else if(commands.size() == 1){
+                            int ind = Integer.parseInt(commands.get(0));
+                            ind--;
+                            ArrayList<post> posts = new ArrayList<>();
+                            posts = currentuser.getunreadpostsfromgroup(commandList.get(1).toString());
+                            currentuser.getreadpostsfromgroup(commandList.get(1).toString(), posts);
+                            if(!(ind < posts.size() || ind < 0)) {
+                                String res = "Invalid";
+                                JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+                                pstream.println(reply);pstream.println("end");pstream.flush();
+                            }
+                            displaypost(posts.get(ind),commandList.get(1).toString(),pstream);
+                            currentuser.markpostasread(posts.get(ind).getpostid(), commandList.get(1).toString());
+                            try {
+                                while ((message = br.readLine()) != null) {
+                                    if(message.equals("")) {
+                                        continue;
+                                    }
+                                    ArrayList<String> cmdss = new ArrayList<>();
+                                    StringTokenizer toks = new StringTokenizer(message);
+                                    while (toks.hasMoreTokens()) {
+                                        cmdss.add(toks.nextToken());
+                                    }
+                                    if(cmdss.get(0).equals("q") && cmdss.size() == 1){
+                                        String res = "";
+                                        JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+                                        pstream.println(reply);pstream.println("end");pstream.flush();
+                                        break;
+                                    }
+                                }
+                            }
+                            catch(IOException e) {
+                                System.out.println("read post number : " + e);
+                            }
                         }
                     }}
                 catch (IOException e)
@@ -419,6 +473,20 @@ public class Server extends Thread{
         }
 
     }
+
+    public void displaypost(post thispost, String group, PrintWriter pstream) {
+        String res = "";
+        res = "Group : " + group + "\n";
+        res += "Subject : " + thispost.getsubject() + "\n";
+        res += "Author : " + thispost.getAuthor() + "\n";
+        res += "Date : " + thispost.gettime() + "\n\n";
+        for(int i = 0; i < thispost.getmessage().size(); i++ ) {
+            res += thispost.getmessagewithindex(i) + "\n";
+        }
+        JSONObject reply = currentuser.createreplyjson("sg", res, null, null);
+        pstream.println(reply);pstream.println("end");pstream.flush();
+    }
+
     public boolean agCommand(int n, PrintWriter pstream, int start) {
 
         String res = "";
@@ -480,7 +548,7 @@ public class Server extends Thread{
             if(i==start){
                 res += "\n";
             }
-            String j = posts.get(i).gettime() + "    " + posts.get(i).getmessage();
+            String j = posts.get(i).gettime() + "    " + posts.get(i).getmessagewithindex(0);
             String sub = " ";
             if(!posts.get(i).isread()) {
                 sub = "N";
