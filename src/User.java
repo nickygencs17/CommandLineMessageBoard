@@ -15,7 +15,8 @@ import java.util.StringTokenizer;
 /**
  * Created by nicholasgenco on 11/22/16.
  */
-public class User {
+public class
+User {
 
     private String userName;
     private ArrayList<String> subscriptions;
@@ -46,21 +47,25 @@ public class User {
     public ArrayList<String> getSubscriptions() {
         return subscriptions;
     }
-    public void subscribegroup(int index) {
+    public boolean subscribegroup(int index) {
         if(!isroomsubscribed(index)) {
             subscriptions.add(subscriptions.size(), Integer.toString(index));
             updatejsonusers(index,"add");
+            return true;
         }
+        return false;
     }
     public void unsubscribegroupwithindex(int i) {
             int index = Integer.parseInt(subscriptions.get(i));
             updatejsonusers(index,"remove");
     }
-    public void unsubscribegroup(int index) {
+    public boolean unsubscribegroup(int index) {
         if(isroomsubscribed(index)) {
             subscriptions.remove(Integer.toString(index));
             updatejsonusers(index,"remove");
+            return true;
         }
+        return false;
     }
     public boolean checksubscribedbyname (String s) {
         ArrayList<post> posts = new ArrayList<>();
@@ -264,10 +269,24 @@ public class User {
             }
         }
         catch (Exception v){
-            System.out.println("Creating mesage " + v);
+            System.out.println("Creating message " + v);
         }
         return sub;
     }
+
+    public JSONObject statusReplyJson(String cmd, String status) {
+        JSONObject obj = new JSONObject();
+        try {
+            obj.put("type", cmd);
+            obj.put("message", status);
+            return obj;
+        }
+        catch(Exception e) {
+            System.out.println("Creating status message " + e);
+        }
+        return obj;
+    }
+
     public ArrayList <post> getunreadpostsfromgroup (String group) {
         ArrayList<post> posts = new ArrayList<>();
         try {

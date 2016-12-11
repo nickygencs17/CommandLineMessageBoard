@@ -11,7 +11,7 @@ import org.json.simple.parser.JSONParser;
 public class Client {
 
     private static Socket socket;
-    private static boolean inputChnage = false;
+    private static boolean inputChange = false;
     private static String resMessage = "";
 
 
@@ -36,9 +36,9 @@ public class Client {
                     socketcreated = true;
                 }
                 //Send the message to the server
-                if(inputChnage== false ) {
+                if(inputChange == false ) {
                     Scanner keyboard = new Scanner(System.in);
-                    System.out.println("Enter an Command");
+                    System.out.println("Enter a Command");
                     String command = keyboard.nextLine();
                     sendMessage = command + "\n";
                 }
@@ -60,10 +60,6 @@ public class Client {
                     if (line.equals("end")) {
                         break;
                     }
-                    if (line.equals("logout")) {
-                        socketcreated = false;
-                        socket.close();
-                    }
                     else{
 
                     }
@@ -71,18 +67,20 @@ public class Client {
                 }
 
                 resMessage = readMessage(message);
-                if(message.equals(resMessage)|| resMessage.equals("")){
-                    inputChnage= false;
+                if(message.equals(resMessage)|| resMessage.equals("") || resMessage.equals("logout")){
+                    inputChange = false;
 
                 }
                 else {
-                    inputChnage = true;
+                    inputChange = true;
                 }
 
 
                 //System.out.println("Message received from the server : " );
 
-                if (message.equals("logout")) {
+                if (resMessage.equals("logout")) {
+                    socketcreated = false;
+                    socket.close();
                     loop = false;
                 }
             }
@@ -105,19 +103,22 @@ public class Client {
         if(message.length() !=0 ){
             System.out.println(message);
             try {
-                Object obj = parser.parse(message);
+                JSONArray obj = (JSONArray) parser.parse(message);
 
-                JSONObject jsonObject = (JSONObject) obj;
-                String s = jsonObject.get("type").toString();
+                for(int i = 0; i < obj.size(); i++) {
+                    JSONObject jsonObject = (JSONObject) obj.get(i);
+                    String s = jsonObject.get("type").toString();
 
-                if (s.equals("rgp")) {
-                    returnMessage = readPost(message);
-                } else {
-                   // returnMessage = jsonObject.get("message").toString();
-                    System.out.println(jsonObject.get("message").toString());
-                    returnMessage = "";
+                    if (s.equals("rgp")) {
+                        returnMessage = readPost(message);
+                    } else if(s.equals("logout")) {
+                        returnMessage = "logout";
+                        System.out.println(jsonObject.get("message").toString());
+                    } else {
+                        System.out.println(jsonObject.get("message").toString());
+                        returnMessage = "";
+                    }
                 }
-
             } catch (Exception v) {
                 System.out.println(v);
             }
