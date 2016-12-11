@@ -292,8 +292,12 @@ public class Server extends Thread{
                             break;
                         }
                     }
-                    else if(commands.size() > 0){
+                    else if(commands.size() > 0 && (commands.get(0).equals(SUBSCRIBE) || commands.get(0).equals(UNSUBSCRIBE))){
                         executespecialag(commands, pstream);
+                    }
+                    else {
+                        JSONArray replyArray = new JSONArray();
+                        statusReply(currentuser, AG, ERR_FORBIDDEN, pstream, replyArray, true);
                     }
                 }}
                 catch (IOException e)
