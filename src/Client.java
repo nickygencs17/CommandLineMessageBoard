@@ -26,7 +26,7 @@ public class Client {
             BufferedWriter bw = null;
             while (loop) {
                 String host = "localhost";
-                int port = 1234;
+                int port = 1235;
                 InetAddress address = InetAddress.getByName(host);
                 if (!socketcreated) {
                     socket = new Socket(address, port);
@@ -59,9 +59,6 @@ public class Client {
                 while ((line = br.readLine()) != null) {
                     if (line.equals("end")) {
                         break;
-                    }
-                    else{
-
                     }
                     message += line + "\n";
                 }

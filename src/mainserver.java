@@ -12,7 +12,7 @@ public class mainserver {
     public mainserver()
     {
         try {
-            ssock = new ServerSocket(1234);
+            ssock = new ServerSocket(1235);
         }
         catch (IOException e)
         {
