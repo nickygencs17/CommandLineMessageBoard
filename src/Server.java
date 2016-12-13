@@ -665,7 +665,7 @@ public class Server extends Thread{
                 }
                 this.setCmdList(commmandList);
                 logout = parseArgs(this.cmdList, br, pstream);
-                pstream.println(END);pstream.flush();
+                // pstream.println(END);pstream.flush();
                 //pstream.close();
                 if(logout)
                 {
