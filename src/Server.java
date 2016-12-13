@@ -1,5 +1,4 @@
 import java.io.*;
-import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.Date;
 import java.util.ArrayList;
@@ -8,7 +7,6 @@ import java.util.StringTokenizer;
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
-import org.json.simple.parser.ParseException;
 
 
 public class Server extends Thread{
@@ -194,13 +192,13 @@ public class Server extends Thread{
                 int index = Integer.parseInt(commandlist.get(i));
                 boolean result = currentuser.subscribegroup(index);
                 if(!result && i+1 < commandlist.size())
-                    statusReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, false);
+                    statusDataReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, null);
                 else if (!result && !(i+1 < commandlist.size()))
-                    statusReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
+                    statusDataReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, null);
                 else if(result && i+1 < commandlist.size())
-                    statusReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, false);
+                    statusDataReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, null);
                 else
-                    statusReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
+                    statusDataReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, null);
                 init();
             }
         }
@@ -210,13 +208,13 @@ public class Server extends Thread{
                 int index = Integer.parseInt(commandlist.get(i));
                 boolean result = currentuser.unsubscribegroup(index);
                 if(!result && i+1 < commandlist.size())
-                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, false);
+                    statusDataReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, null);
                 else if (!result && !(i+1 < commandlist.size()))
-                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
+                    statusDataReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, null);
                 else if(result && i+1 < commandlist.size())
-                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, false);
+                    statusDataReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, null);
                 else
-                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
+                    statusDataReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, null);
                 init();
             }
         }
@@ -228,7 +226,7 @@ public class Server extends Thread{
         if(commandList.size() == 0) {
             JSONArray replyArray = new JSONArray();
             currentuser = new User(null, null);
-            statusReply(currentuser, LOGIN, ERR_FORBIDDEN, pstream, replyArray, true);
+            statusDataReply(currentuser, LOGIN, ERR_FORBIDDEN, pstream, replyArray, null);
             //return false;
         }
         else if(commandList.get(0).equals(LOGIN) && !loggedIn){
@@ -240,10 +238,10 @@ public class Server extends Thread{
                 {
                     loggedIn = true;
                     System.out.println(userName + " Logged In");
-                    statusReply(currentuser, LOGIN, SUCCESS_OK, pstream, replyArray, true);
+                    statusDataReply(currentuser, LOGIN, SUCCESS_OK, pstream, replyArray, null);
                 } else {
                     currentuser = new User(null, null);
-                    statusReply(currentuser, LOGIN, ERR_NOTFOUND, pstream, replyArray, true);
+                    statusDataReply(currentuser, LOGIN, ERR_NOTFOUND, pstream, replyArray, null);
                 }
             }
             else{
@@ -266,7 +264,7 @@ public class Server extends Thread{
             if (n == 0){
                 System.out.println("Invalid Number of Arguments");
                 JSONArray replyArray = new JSONArray();
-                statusReply(currentuser, AG, ERR_FORBIDDEN, pstream, replyArray, true);
+                statusDataReply(currentuser, AG, ERR_FORBIDDEN, pstream, replyArray, null);
             }
             else{
                 int start = 0;
@@ -288,7 +286,7 @@ public class Server extends Thread{
                     }
                     if(commands.get(0).equals(QUIT)) {
                         JSONArray replyArray = new JSONArray();
-                        statusReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, true);
+                        statusDataReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, null);
                         break;
                     }
                     else if(commands.get(0).equals(NEXT)) {
@@ -303,7 +301,7 @@ public class Server extends Thread{
                     }
                     else {
                         JSONArray replyArray = new JSONArray();
-                        statusReply(currentuser, AG, ERR_FORBIDDEN, pstream, replyArray, true);
+                        statusDataReply(currentuser, AG, ERR_FORBIDDEN, pstream, replyArray, null);
                     }
                 }}
                 catch (IOException e)
@@ -335,7 +333,7 @@ public class Server extends Thread{
                         }
                         if(commands.get(0).equals(QUIT) && commandList.size() == 1) {
                             JSONArray replyArray = new JSONArray();
-                            statusReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, true);
+                            statusDataReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, null);
                             break;
                         }
                         if(commands.get(0).equals(POST) && commands.size() > 1) {
@@ -354,7 +352,7 @@ public class Server extends Thread{
                         }
                         else {
                             JSONArray replyArray = new JSONArray();
-                            statusReply(currentuser, SG, ERR_FORBIDDEN, pstream, replyArray, true);
+                            statusDataReply(currentuser, SG, ERR_FORBIDDEN, pstream, replyArray, null);
                         }
                     }}
                 catch (IOException e)
@@ -369,22 +367,18 @@ public class Server extends Thread{
             int n = returnNforrg(commandList);
             if (n == 0 || commandList.size() <= 1 || commandList.size() >= 4){
                 JSONArray replyArray = new JSONArray();
-                statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
                 String res = "Invalid Number of Arguments";
                 JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-                replyArray.add(reply);
-                pstream.println(replyArray);pstream.println(END);pstream.flush();
+                statusDataReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, reply);
                 return false;
             }
             boolean ret = true;
             ret = currentuser.checksubscribedbyname(commandList.get(1).toString());
             if (!ret) {
                 JSONArray replyArray = new JSONArray();
-                statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
                 String res = "Invalid group name";
                 JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-                replyArray.add(reply);
-                pstream.println(replyArray);pstream.println(END);pstream.flush();
+                statusDataReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, reply);
                 return false;
             }
             if(ret){
@@ -401,7 +395,7 @@ public class Server extends Thread{
                         }
                         if(commands.get(0).equals(QUIT) && commands.size() == 1) {
                             JSONArray replyArray = new JSONArray();
-                            statusReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, true);
+                            statusDataReply(currentuser, QUIT, SUCCESS_OK, pstream, replyArray, null);
                             break;
                         }
                         else if(commands.get(0).equals(POST) && commands.size() == 1) {
@@ -436,10 +430,8 @@ public class Server extends Thread{
                             }
                             String res = "";
                             JSONArray replyArray = new JSONArray();
-                            statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
                             JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-                            replyArray.add(reply);
-                            pstream.println(replyArray);pstream.println(END);pstream.flush();
+                            statusDataReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, reply);
                         }
                         else if(commands.size() == 1){
                             int ind = Integer.parseInt(commands.get(0));
@@ -449,11 +441,9 @@ public class Server extends Thread{
                             currentuser.getreadpostsfromgroup(commandList.get(1).toString(), posts);
                             if(!(ind < posts.size() || ind < 0)) {
                                 JSONArray replyArray = new JSONArray();
-                                statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
                                 String res = "Invalid";
                                 JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-                                replyArray.add(reply);
-                                pstream.println(replyArray);pstream.println(END);pstream.flush();
+                                statusDataReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, reply);
                             }
                             displaypost(posts.get(ind),commandList.get(1).toString(),pstream);
                             currentuser.markpostasread(posts.get(ind).getpostid(), commandList.get(1).toString());
@@ -470,10 +460,8 @@ public class Server extends Thread{
                                     if(cmdss.get(0).equals(QUIT) && cmdss.size() == 1){
                                         String res = "";
                                         JSONArray replyArray = new JSONArray();
-                                        statusReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, false);
                                         JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-                                        replyArray.add(reply);
-                                        pstream.println(replyArray);pstream.println(END);pstream.flush();
+                                        statusDataReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, reply);
                                         break;
                                     }
                                 }
@@ -501,9 +489,7 @@ public class Server extends Thread{
                 //{
                     loggedIn = false;
                     JSONArray replyArray = new JSONArray();
-                    JSONObject reply = currentuser.statusReplyJson(LOGOUT, SUCCESS_OK);
-                    replyArray.add(reply);
-                    pstream.println(replyArray);pstream.flush();
+                    statusDataReply(currentuser, LOGOUT, SUCCESS_OK, pstream, replyArray, null);
                     this.setmessage(LOGOUT);
                     return true;
                 //}
@@ -565,19 +551,18 @@ public class Server extends Thread{
             res += thispost.getmessagewithindex(i) + "\n";
         }
         JSONArray replyArray = new JSONArray();
-        statusReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, false);
         JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-        replyArray.add(reply);
-        pstream.println(replyArray);pstream.println(END);pstream.flush();
+        statusDataReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, reply);
     }
 
-    public void statusReply(User currentuser, String type, String status, PrintWriter pstream, JSONArray replyArray, boolean doEnd) {
-        JSONObject reply = currentuser.statusReplyJson(type, status);
-        replyArray.add(reply);
-        if(doEnd) {
-            pstream.println(replyArray);
-            pstream.println(END);pstream.flush();
-        }
+    public void statusDataReply(User currentuser, String type, String status, PrintWriter pstream, JSONArray replyArray, JSONObject reply) {
+        JSONObject statusReplyObj = currentuser.statusReplyJson(type, status);
+        replyArray.add(statusReplyObj);
+        if(reply != null)
+            replyArray.add(reply);
+
+        pstream.println(replyArray);
+        pstream.println(END);pstream.flush();
     }
 
     public boolean agCommand(int n, PrintWriter pstream, int start) {
@@ -599,12 +584,9 @@ public class Server extends Thread{
         }
         // SEND STATUS OK AND DATA
         JSONArray replyArray = new JSONArray();
-        statusReply(currentuser, AG, SUCCESS_OK, pstream, replyArray, false);
-
         JSONObject reply = currentuser.createreplyjson(AG, res, null, null);
-        replyArray.add(reply);
-        pstream.println(replyArray);pstream.println(END);pstream.flush();
-          return returns;
+        statusDataReply(currentuser, AG, SUCCESS_OK, pstream, replyArray, reply);
+        return returns;
     }
 
     public boolean sgCommand(int n, PrintWriter pstream, int start) {
@@ -631,11 +613,8 @@ public class Server extends Thread{
         }
         // SEND STATUS OK AND DATA
         JSONArray replyArray = new JSONArray();
-        statusReply(currentuser, SG, SUCCESS_OK, pstream, replyArray, false);
-
         JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
-        replyArray.add(reply);
-        pstream.println(replyArray);pstream.println(END);pstream.flush();
+        statusDataReply(currentuser, SG, SUCCESS_OK, pstream, replyArray, reply);
         return returns;
     }
 
@@ -659,11 +638,8 @@ public class Server extends Thread{
             res+= Integer.toString(i+1)+".  " + sub + "  "+ j +"\n";
         }
         JSONArray replyArray = new JSONArray();
-        statusReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, false);
-
         JSONObject reply = currentuser.createreplyjson(RG, res, group, currentuser.getUserName());
-        replyArray.add(reply);
-        pstream.println(replyArray);pstream.println(END);pstream.flush();
+        statusDataReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, reply);
         return returns;
     }
 
