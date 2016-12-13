@@ -192,11 +192,11 @@ public class Server extends Thread{
                 int index = Integer.parseInt(commandlist.get(i));
                 boolean result = currentuser.subscribegroup(index);
                 if(!result && i+1 < commandlist.size())
-                    statusReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
+                    statusReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, false);
                 else if (!result && !(i+1 < commandlist.size()))
                     statusReply(currentuser, SUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
                 else if(result && i+1 < commandlist.size())
-                    statusReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
+                    statusReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, false);
                 else
                     statusReply(currentuser, SUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
                 init();
@@ -208,11 +208,11 @@ public class Server extends Thread{
                 int index = Integer.parseInt(commandlist.get(i));
                 boolean result = currentuser.unsubscribegroup(index);
                 if(!result && i+1 < commandlist.size())
-                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
+                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, false);
                 else if (!result && !(i+1 < commandlist.size()))
                     statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
                 else if(result && i+1 < commandlist.size())
-                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
+                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, false);
                 else
                     statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
                 init();
