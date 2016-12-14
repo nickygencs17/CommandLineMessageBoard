@@ -39,6 +39,7 @@ public class Server extends Thread{
     String ERR_FORBIDDEN = "Forbidden 403";
 
 
+
     Server(Socket csocket, String message, ArrayList<String> ls) {
         this.csocket = csocket;
         this.msg = message;
@@ -644,17 +645,21 @@ public class Server extends Thread{
             return true;
         }
         else {
-            if (!loggedIn) {
-                JSONArray replyArray = new JSONArray();
-                currentuser = new User(null, null);
-                statusReply(currentuser, LOGOUT, ERR_FORBIDDEN, pstream, replyArray, false);
-                String res = "Please Log In";
-                JSONObject reply = currentuser.createreplyjson(LOGOUT, res, null, null);
-                replyArray.add(reply);
-                pstream.println(replyArray);pstream.println(END);pstream.flush();
-            } else {
-
-            }
+        if (!loggedIn) {
+        JSONArray replyArray = new JSONArray();
+        currentuser = new User(null, null);
+        statusReply(currentuser, LOGOUT, ERR_FORBIDDEN, pstream, replyArray, false);
+        String res = "Please Log In";
+        JSONObject reply = currentuser.createreplyjson("ag", res, null, null);
+        replyArray.add(reply);
+        pstream.println(replyArray);pstream.println(END);pstream.flush();
+        } else {
+        String res = "INVALID";
+        JSONArray replyArray = new JSONArray();
+        JSONObject reply = currentuser.createreplyjson("ag", res, null, null);
+        replyArray.add(reply);
+        pstream.println(replyArray);pstream.println(END);pstream.flush();
+        }
         }
         return false;
     }
