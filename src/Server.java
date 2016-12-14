@@ -302,23 +302,23 @@ public class Server extends Thread{
                         "\n" +
                         "ag [optional N Groups] - all groups\n" +
                         "Ag sub menu\n" +
-                        "s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
+                        "   s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
                         "\n" +
-                        "u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
+                        "   u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
                         "\n" +
-                        "n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
+                        "   n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
                         "\n" +
-                        "q – exits from the ag command, before finishing displaying all groups\n" +
+                        "   q – exits from the ag command, before finishing displaying all groups\n" +
                         "\n" +
                         "sg [optional N Groups] - subscribed groups \n" +
                         "Ag sub menu\n" +
-                        "s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
+                        "   s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
                         "\n" +
-                        "u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
+                        "   u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
                         "\n" +
-                        "n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
+                        "   n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
                         "\n" +
-                        "q – exits from the ag command, before finishing displaying all groups\n" +
+                        "   q – exits from the ag command, before finishing displaying all groups\n" +
                         "\n" +
                         "rg - read groups\n" +
                         "Sub command -[id] – a number between 1 and N denoting the post within the list of N posts to display. The content of the specified post is shown. E.g., entering ‘1’ displays the content of the post “Sort a Python dictionary by value”. \n" +
@@ -338,7 +338,7 @@ public class Server extends Thread{
                         "Logout\n";
                 JSONArray replyArray = new JSONArray();
                 currentuser = new User(null, null);
-                JSONObject reply = currentuser.createreplyjson(HELP, help, null, null);
+                JSONObject reply = currentuser.createreplyjson("ag", help, null, null);
                 replyArray.add(reply);
                 pstream.println(replyArray);pstream.println(END);pstream.flush();
             }
