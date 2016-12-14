@@ -19,6 +19,8 @@ public class Client {
         boolean loop = true;
         boolean socketcreated = false;
 
+        // CREATING A STREAM FOR COMMUNICATION BETWEEN CLIENT AND SERVER AND CONNECTING TO SERVER
+        // THROUGH HOST AND PORT
         try {
             String sendMessage="";
             OutputStream os;
@@ -48,8 +50,6 @@ public class Client {
                 bw.write(sendMessage);
                 bw.flush();
 
-                System.out.println("Message sent to the server : " + sendMessage);
-
                 //Get the return message from the server
                 InputStream is = socket.getInputStream();
                 InputStreamReader isr = new InputStreamReader(is);
@@ -64,6 +64,7 @@ public class Client {
                 }
 
                 resMessage = readMessage(message);
+                // CHECK IF NO CHANGES IN THE MESSAGE OCCURRED (I.E. TO RETURN FROM LOOP)
                 if(message.equals(resMessage)|| resMessage.equals("") || resMessage.equals("logout")){
                     inputChange = false;
 
@@ -71,9 +72,6 @@ public class Client {
                 else {
                     inputChange = true;
                 }
-
-
-                //System.out.println("Message received from the server : " );
 
                 if (resMessage.equals("logout")) {
                     socketcreated = false;
@@ -94,6 +92,8 @@ public class Client {
         }
     }
 
+    // CLIENT RECIEVES A JSON ARRAY IN A STRING FORM, BREAKS IT DOWN AND PRINTS THE DATA
+    // TO THE USER'S SCREEN
     public static String readMessage(String message) {
         String returnMessage = "";
         JSONParser parser = new JSONParser();
@@ -126,6 +126,8 @@ public class Client {
         }
     }
 
+    // READMESSAGE METHOD CALLS READPOST IF THE DATA BEING SENT WAS A GROUP INFO REQUESTED FROM CLIENT
+    // THEN PROMPTS USER TO ENTER SUBJECT, AND POST ENDING WITH A "." TO BE SENT BACK TO THE SERVER
     public static String readPost(String message) throws IOException {
 
         String returnMessage = "";
