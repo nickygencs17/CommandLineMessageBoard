@@ -71,7 +71,7 @@ User {
         ArrayList<post> posts = new ArrayList<>();
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("JSONData/ag.json"));
+            Object obj = parser.parse(new FileReader("../JSONData/ag.json"));
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("ag");
             for (int i = 0; i < arr.size(); i++) {
@@ -89,7 +89,7 @@ User {
     public void updatejsonusers(int index, String option) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("JSONData/users.json"));
+            Object obj = parser.parse(new FileReader("../JSONData/users.json"));
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("existingUsers");
             for (int i = 0; i < arr.size(); i++)
@@ -110,7 +110,7 @@ User {
                         array.remove(getindex(array, Integer.toString(index)));
                     }
                     try {
-                        FileWriter files = new FileWriter("JSONData/users.json");
+                        FileWriter files = new FileWriter("../JSONData/users.json");
                         files.write(jsonObject.toJSONString());
                         files.flush();
                         files.close();
@@ -151,7 +151,7 @@ User {
     public Date getlastaccessed(String jk) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("JSONData/users.json"));
+            Object obj = parser.parse(new FileReader("../JSONData/users.json"));
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("existingUsers");
             for (int i = 0; i < arr.size(); i++)
@@ -182,7 +182,7 @@ User {
     public void updategrouptime(String jk) {
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("JSONData/users.json"));
+            Object obj = parser.parse(new FileReader("../JSONData/users.json"));
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("existingUsers");
             for (int i = 0; i < arr.size(); i++)
@@ -205,7 +205,7 @@ User {
                         }
                     }
                     try {
-                        FileWriter files = new FileWriter("JSONData/users.json");
+                        FileWriter files = new FileWriter("../JSONData/users.json");
                         files.write(jsonObject.toJSONString());
                         files.flush();
                         files.close();
@@ -226,7 +226,7 @@ User {
         int count = 0;
         try {
             JSONParser parser = new JSONParser();
-            Object obj = parser.parse(new FileReader("JSONData/ag.json"));
+            Object obj = parser.parse(new FileReader("../JSONData/ag.json"));
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("ag");
             JSONObject j = (JSONObject) arr.get(Integer.parseInt(index));

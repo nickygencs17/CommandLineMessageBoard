@@ -113,7 +113,7 @@ public class Server extends Thread{
         StringBuilder sb = new StringBuilder();
         JSONParser parser = new JSONParser();
         try {
-            Object obj = parser.parse(new FileReader("./JSONData/users.json"));
+            Object obj = parser.parse(new FileReader("JSONData/users.json"));
 
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get("existingUsers");
@@ -152,7 +152,7 @@ public class Server extends Thread{
         StringBuilder sb = new StringBuilder();
         JSONParser parser = new JSONParser();
         try {
-            Object obj = parser.parse(new FileReader("./JSONData/ag.json"));
+            Object obj = parser.parse(new FileReader("JSONData/ag.json"));
 
             JSONObject jsonObject = (JSONObject) obj;
             JSONArray arr = (JSONArray) jsonObject.get(AG);
@@ -356,8 +356,7 @@ public class Server extends Thread{
                             }
                         }
                         else if(commands.size() > 0 && commands.get(0).equals(UNSUBSCRIBE)){
-                            //executespecialsg(commands);
-                            pstream.println(END);pstream.flush();
+                            executespecialsg(commands);
                         }
                         else {
                             JSONArray replyArray = new JSONArray();
