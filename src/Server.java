@@ -292,8 +292,55 @@ public class Server extends Thread{
         // IF USER SENDS HELP, INSTRUCTIONS ARE SENT BACK TO THE USER
         else if(commandList.get(0).equals(HELP)){
             if(commandList.size()==1){
-                String help = commandList.get(1).toString();
-                System.out.println(help);
+                String help = "Help \n" +
+                        "\n" +
+                        "Command List\n" +
+                        "\n" +
+                        "Login [username]\n" +
+                        "\n" +
+                        "Help\n" +
+                        "\n" +
+                        "ag [optional N Groups] - all groups\n" +
+                        "Ag sub menu\n" +
+                        "s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
+                        "\n" +
+                        "u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
+                        "\n" +
+                        "n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
+                        "\n" +
+                        "q – exits from the ag command, before finishing displaying all groups\n" +
+                        "\n" +
+                        "sg [optional N Groups] - subscribed groups \n" +
+                        "Ag sub menu\n" +
+                        "s – subscribe to groups. It takes one or more numbers between 1 and N as arguments. E.g., given the output above, the user may enter “s 1 3” to subscribe to two more groups: comp.programming and comp.lang.c \n" +
+                        "\n" +
+                        "u – unsubscribe. It has the same syntax as the s command, except that it is used to unsubscribe from one or more groups. E.g., the user can unsubscribe from group comp.lang.javascript by entering the command “u 5” \n" +
+                        "\n" +
+                        "n – lists the next N discussion groups. If all groups are displayed, the program exits from the ag command mode\n" +
+                        "\n" +
+                        "q – exits from the ag command, before finishing displaying all groups\n" +
+                        "\n" +
+                        "rg - read groups\n" +
+                        "Sub command -[id] – a number between 1 and N denoting the post within the list of N posts to display. The content of the specified post is shown. E.g., entering ‘1’ displays the content of the post “Sort a Python dictionary by value”. \n" +
+                        "Rg submenu\n" +
+                        "  ‘n’ – would display at most N more lines of the post content. \n" +
+                        "\n" +
+                        "   \n" +
+                        "    r – marks a post as read. It takes a number or range of number as input. E.g., ‘r 1’ marks the first displayed post to be read. ‘r 1-3’ marks posts #1 to #3 in the displayed list to be read. \n" +
+                        "\n" +
+                        "    n – lists the next N posts. If all posts are displayed, the program exits from the rg command mode\n" +
+                        "\n" +
+                        "    p – post to the group. This sub-command allows a user to compose and submit a new post to the group. \n" +
+                        "\tsub menu  ‘q’ – in postwould quit displaying the post content. The list of posts before opening the post is shown again with the post just opened marked as read. \n" +
+                        "\n" +
+                        "    q – exits from the rg command\n" +
+                        "\n" +
+                        "Logout\n";
+                JSONArray replyArray = new JSONArray();
+                currentuser = new User(null, null);
+                JSONObject reply = currentuser.createreplyjson(HELP, help, null, null);
+                replyArray.add(reply);
+                pstream.println(replyArray);pstream.println(END);pstream.flush();
             }
             else{
                 System.out.println("Invalid Number of Arguments");
@@ -449,11 +496,11 @@ public class Server extends Thread{
             boolean ret = true;
             // SEARCHES THROUGH ALL THE ROOMS TO FIND ROOM THE USER COMMANDED.
             ret = currentuser.checksubscribedbyname(commandList.get(1).toString());
-            // IF NOT FOUND, ERR_FORBIDDEN IS SENT BACK AND A DIALOG SAYING INVALID
+            // IF NOT FOUND, ERR_NOTFOUND IS SENT BACK AND A DIALOG SAYING INVALID
             // GROUP NAME.
             if (!ret) {
                 JSONArray replyArray = new JSONArray();
-                statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
+                statusReply(currentuser, RG, ERR_NOTFOUND, pstream, replyArray, false);
                 String res = "Invalid group name";
                 JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
                 replyArray.add(reply);
@@ -519,7 +566,7 @@ public class Server extends Thread{
                             }
                             String res = "";
                             JSONArray replyArray = new JSONArray();
-                            statusReply(currentuser, RG, ERR_FORBIDDEN, pstream, replyArray, false);
+                            statusReply(currentuser, RG, SUCCESS_OK, pstream, replyArray, false);
                             JSONObject reply = currentuser.createreplyjson(SG, res, null, null);
                             replyArray.add(reply);
                             pstream.println(replyArray);pstream.println(END);pstream.flush();
@@ -590,38 +637,29 @@ public class Server extends Thread{
         // ELSE IF FALSE, I.E. USER IS NOT LOGGED IN, ERR_FORBIDDEN IS SENT BACK
         // WITH A PROMPT TO LOG IN.
         else if(commandList.get(0).equals(LOGOUT) && loggedIn){
-
-            //if(commandList.size()==1){
-
-                //String userName = commandList.get(2).toString();
-                //if(currentuser.getUserName().equals(userName))
-                //{
-                    loggedIn = false;
-                    JSONArray replyArray = new JSONArray();
-                    statusReply(currentuser, LOGOUT, SUCCESS_OK, pstream, replyArray, true);
-                    this.setmessage(LOGOUT);
-                    return true;
-                //}
-            //}
-            //else{
-                //System.out.println("Invalid Number of Arguments");
-            //}
-            //return false;
+            loggedIn = false;
+            JSONArray replyArray = new JSONArray();
+            statusReply(currentuser, LOGOUT, SUCCESS_OK, pstream, replyArray, true);
+            this.setmessage(LOGOUT);
+            return true;
         }
         else {
             if (!loggedIn) {
-
-
-                System.out.println("Please Log In");
+                JSONArray replyArray = new JSONArray();
+                currentuser = new User(null, null);
+                statusReply(currentuser, LOGOUT, ERR_FORBIDDEN, pstream, replyArray, false);
+                String res = "Please Log In";
+                JSONObject reply = currentuser.createreplyjson(LOGOUT, res, null, null);
+                replyArray.add(reply);
+                pstream.println(replyArray);pstream.println(END);pstream.flush();
             } else {
 
-                System.out.println("Invalid ");
             }
         }
         return false;
     }
 
-
+    // COMPUTES THE NUMBER OF COMMANDS RECEIVED FROM USER.
     public int returnN(ArrayList commandList){
         if(commandList.size()==2){
             String n = commandList.get(1).toString();
@@ -636,6 +674,7 @@ public class Server extends Thread{
         }
 
     }
+    // COMPUTES THE NUMBER OF COMMANDS RECEIVED FROM USER. SPECIFICALLY USED FOR RG COMMANDS
     public int returnNforrg(ArrayList commandList){
         if(commandList.size()==3){
             String n = commandList.get(2).toString();
@@ -651,6 +690,9 @@ public class Server extends Thread{
 
     }
 
+    // THIS METHOD TAKES IN THE POST, GROUP, AND WRITES THE CONTENT INTO A POST-LIKE FORM
+    // THEN SENDS IN THROUGH THE PRINT WRITER TO THE USER AS MULTIPLE JSON OBJECTS
+    // WITHIN A JSON ARRAY.
     public void displaypost(post thispost, String group, PrintWriter pstream) {
         String res = "";
         res = "Group : " + group + "\n";
@@ -667,6 +709,10 @@ public class Server extends Thread{
         pstream.println(replyArray);pstream.println(END);pstream.flush();
     }
 
+    // THIS METHOD IS RESPONSIBLE FOR EVERY STATUS RESPONSE SENT FROM USER TO CLIENT INDICATING WHETHER THE COMMAND
+    // IS SUCCESSFULLY READ AND COMPUTED OR THERE EXISTS AN ERROR.
+    // SENDING SUCCESS_OK IF NO ERROR AND ERR_FORBIDDEN IF USER IS NOT ALLOWED TO DO SUCH COMMAND
+    // OR ERR_NOTFOUND IF WHAT USER IS ASKING FOR ISN'T FOUND.
     public void statusReply(User currentuser, String type, String status, PrintWriter pstream, JSONArray replyArray, boolean doEnd) {
         JSONObject statusReplyObj = currentuser.statusReplyJson(type, status);
         replyArray.add(statusReplyObj);
@@ -676,6 +722,8 @@ public class Server extends Thread{
         }
     }
 
+    // THIS METHOD IS USED FOR AG COMMANDS TO SEND BACK THE USER ALL "N" NUMBER
+    // OF GROUPS HE/SHE REQUESTED. ALSO, SENDING BACK SUCCESS_OK.
     public boolean agCommand(int n, PrintWriter pstream, int start) {
 
         String res = "";
@@ -702,6 +750,8 @@ public class Server extends Thread{
         return returns;
     }
 
+    // THIS METHOD IS USED FOR SG COMMANDS TO SEND BACK THE USER ALL "N" NUMBER
+    // OF SUBSCRIBED GROUPS HE/SHE REQUESTED. ALSO, SENDING BACK SUCCESS_OK.
     public boolean sgCommand(int n, PrintWriter pstream, int start) {
 
         String res = "";
@@ -733,6 +783,8 @@ public class Server extends Thread{
         return returns;
     }
 
+    // THIS METHOD IS USED FOR RG COMMANDS TO SEND BACK THE USER THE ROOM HE/SHE REQUESTED
+    // ALSO SENDING BACK SUCCESS_OK.
     public boolean rgCommand(int n, PrintWriter pstream, int start, String group) {
 
         String res = "";
@@ -760,6 +812,8 @@ public class Server extends Thread{
         return returns;
     }
 
+    // THIS METHOD IS USED TO RUN THE SERVER THREAD. A PRINT WRITER, BUFFER READER
+    // INPUT STREAM READER, AND AN INPUT STREAM ARE DECLARED AND INSTANTIATED.
     public void run(){
         PrintWriter pstream = null;
         BufferedReader br;
@@ -772,15 +826,20 @@ public class Server extends Thread{
             isr = new InputStreamReader(is);
             br = new BufferedReader(isr);
             String message;
+            // THIS WHILE LOOP KEEPS RUNNING THE SERVER-CLIENT CONNECTION AS LONG AS THE USER IS LOGGED IN.
             while (!logout && (message = br.readLine()) != null) {
                 ArrayList<String> commmandList = new ArrayList<>();
                 //String message = br.readLine();
                 this.setmessage(message);
                 StringTokenizer tok = new StringTokenizer(message);
+                // TAKES ALL COMMANDS INTO ONE COMMAND AND SENDS IT TO PARSE ARGS TO CHECK
+                // WHETHER IT'S AG, SG, OR RG.
                 while (tok.hasMoreTokens()) {
                     commmandList.add(tok.nextToken());
                 }
                 this.setCmdList(commmandList);
+                // IF PARSE ARGS RETURNS TRUE, PRINT WRITER AND SOCKET BETWEEN SERVER
+                // AND CLIENT IS THEN CLOSED.
                 logout = parseArgs(this.cmdList, br, pstream);
                 // pstream.println(END);pstream.flush();
                 //pstream.close();
@@ -799,7 +858,6 @@ public class Server extends Thread{
         {
             try
             {
-                //pstream.close();
                 csocket.close();
                 System.out.println("Server thread Stopped");
             }
