@@ -221,6 +221,26 @@ public class Server extends Thread{
 
     }
 
+    public void executespecialsg(ArrayList<String> commandList, PrintWriter pstream) {
+        if(commandList.get(0).equals(UNSUBSCRIBE) && commandList.size() > 1) {
+            JSONArray replyArray = new JSONArray();
+            for(int i = 1; i < commandList.size(); i++) {
+                int index = Integer.parseInt(commandList.get(i));
+                String j = currentuser.getSubscriptions().get(index - 1);
+                boolean result = currentuser.unsubscribegroup(Integer.parseInt(j));
+                if(!result && i+1 < commandList.size())
+                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, false);
+                else if(!result && !(i+1 < commandList.size()))
+                    statusReply(currentuser, UNSUBSCRIBE, ERR_FORBIDDEN, pstream, replyArray, true);
+                else if(result && i+1 < commandList.size())
+                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, false);
+                else
+                    statusReply(currentuser, UNSUBSCRIBE, SUCCESS_OK, pstream, replyArray, true);
+                init();
+            }
+        }
+    }
+
     boolean parseArgs(ArrayList commandList, BufferedReader br, PrintWriter pstream){
         init();
         if(commandList.size() == 0) {
@@ -356,7 +376,7 @@ public class Server extends Thread{
                             }
                         }
                         else if(commands.size() > 0 && commands.get(0).equals(UNSUBSCRIBE)){
-                            executespecialsg(commands);
+                            executespecialsg(commands, pstream);
                         }
                         else {
                             JSONArray replyArray = new JSONArray();
