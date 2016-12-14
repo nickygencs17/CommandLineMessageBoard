@@ -595,7 +595,7 @@ public class Server extends Thread{
             if(i==start){
                 res += "\n";
             }
-            int j = this.rooms.get(i).getIndex()+1;
+            int j = this.rooms.get(i).getIndex();
             String sub = " ";
             if(currentuser.isroomsubscribed(j))
             {
