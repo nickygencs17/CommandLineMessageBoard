@@ -23,12 +23,18 @@ public class Client {
         // THROUGH HOST AND PORT
         try {
             String sendMessage="";
+            String host = "localhost";
+            int port = 1235;
+            if(args.length ==3){
+                host = args[1];
+                port = Integer.parseInt(args[2]);
+            }
             OutputStream os;
             OutputStreamWriter osw;
             BufferedWriter bw = null;
             while (loop) {
-                String host = "localhost";
-                int port = 1235;
+
+
                 InetAddress address = InetAddress.getByName(host);
                 if (!socketcreated) {
                     socket = new Socket(address, port);
